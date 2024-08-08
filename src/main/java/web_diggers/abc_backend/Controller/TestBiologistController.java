@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Controller;
+package web_diggers.abc_backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

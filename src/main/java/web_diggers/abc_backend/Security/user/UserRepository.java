@@ -1,7 +1,7 @@
-package web_diggers.abc_backend.Security.user;
+package web_diggers.abc_backend.security.user;
 
 import jakarta.transaction.Transactional;
-import web_diggers.abc_backend.Security.user.model.User;
+import web_diggers.abc_backend.security.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

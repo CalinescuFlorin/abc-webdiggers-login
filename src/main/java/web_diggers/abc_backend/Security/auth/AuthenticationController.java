@@ -1,9 +1,8 @@
-package web_diggers.abc_backend.Security.auth;
+package web_diggers.abc_backend.security.auth;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import web_diggers.abc_backend.Security.auth.model.AuthenticationRequest;
-import web_diggers.abc_backend.Security.auth.model.AuthenticationResponse;
-import web_diggers.abc_backend.Security.auth.model.RegisterRequest;
+import web_diggers.abc_backend.security.auth.model.AuthenticationRequest;
+import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
+import web_diggers.abc_backend.security.auth.model.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +24,24 @@ public class AuthenticationController {
             return new ResponseEntity<>(service.register(request), HttpStatus.OK);
 
         }catch(Exception e){
-            return new ResponseEntity<>(new AuthenticationResponse("", "", "", e.getMessage()), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(
+                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", ""),
+                    HttpStatus.BAD_REQUEST
+            );
         }
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticateUser(@RequestBody AuthenticationRequest request){
-        return ResponseEntity.ok(service.authenticate(request));
+        try{
+            return new ResponseEntity<>(service.authenticate(request), HttpStatus.OK);
+
+        }catch(Exception e){
+            return new ResponseEntity<>(
+                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", ""),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     @RequestMapping("/logout")

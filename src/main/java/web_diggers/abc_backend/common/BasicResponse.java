@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.security.user.model;
+package web_diggers.abc_backend.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateUserRequest {
-    private String email;
-    private String role;
+public class BasicResponse {
+    private String status;
+    private String message;
 }

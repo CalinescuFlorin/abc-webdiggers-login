@@ -5,19 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.*;
 import web_diggers.abc_backend.security.auth.AuthenticationController;
 import web_diggers.abc_backend.security.auth.model.AuthenticationRequest;
 import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
 import web_diggers.abc_backend.security.auth.model.RegisterRequest;
 import web_diggers.abc_backend.security.user.UserController;
 import web_diggers.abc_backend.security.user.UserRepository;
+import web_diggers.abc_backend.security.user.model.Role;
 import web_diggers.abc_backend.security.user.model.User;
 
-import java.util.Date;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +37,7 @@ class AbcBackendApplicationTests {
 	void contextLoads(){
 		assertThat(authenticationController).isNotNull();
 		assertThat(userController).isNotNull();
-		assertThat(siteLink).isEqualTo("http://localhost:8080/api/v1/");
+		assertThat(userRepository).isNotNull();
 	}
 
 	@Test
@@ -58,7 +56,10 @@ class AbcBackendApplicationTests {
 	}
 
 	void authorizationTests(){
-
+		testNormalUserAuthorizationLevel();
+		testBiologistAuthorizationLevel();
+		testArchaeologistAuthorizationLevel();
+		testAdminAuthorizationLevel();
 	}
 
 	void registerShouldCreateAccount(){
@@ -193,6 +194,221 @@ class AbcBackendApplicationTests {
 		assertThat(response.getFirstName()).isEqualTo("");
 		assertThat(response.getLastName()).isEqualTo("");
 		assertThat(response.getToken()).isEqualTo("");
+	}
+
+	void testNormalUserAuthorizationLevel(){
+		RegisterRequest request = RegisterRequest.builder()
+				.email("normal_auth_test_account@abc_test.test")
+				.password("auth_test")
+				.firstName("auth")
+				.lastName("test")
+				.build();
+
+		ParameterizedTypeReference<AuthenticationResponse> responseType = new ParameterizedTypeReference<AuthenticationResponse>() { };
+		ResponseEntity<AuthenticationResponse> result = restTemplate.exchange(
+				siteLink + "auth/register", HttpMethod.POST,
+				new HttpEntity<>(request), responseType);
+
+		AuthenticationResponse response = result.getBody();
+		assertThat(response).isNotNull();
+
+		String token = response.getToken();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token);
+
+		// Normal User Authorization
+		ParameterizedTypeReference<String> accessResponseType = new ParameterizedTypeReference<>() { };
+		ResponseEntity<String> accessResult = restTemplate.exchange(
+				siteLink + "visitor", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getBody()).isEqualTo("User has access to this resource.");
+
+		// Archaeologist Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "arheo", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
+
+		// Biologist Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "bio", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
+
+		// Admin Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "user/users", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
+
+		userRepository.deleteUserByEmail("normal_auth_test_account@abc_test.test");
+	}
+
+	void testBiologistAuthorizationLevel(){
+		RegisterRequest request = RegisterRequest.builder()
+				.email("bio_auth_test_account@abc_test.test")
+				.password("auth_test")
+				.firstName("auth")
+				.lastName("test")
+				.build();
+
+		ParameterizedTypeReference<AuthenticationResponse> responseType = new ParameterizedTypeReference<AuthenticationResponse>() { };
+		ResponseEntity<AuthenticationResponse> result = restTemplate.exchange(
+				siteLink + "auth/register", HttpMethod.POST,
+				new HttpEntity<>(request), responseType);
+
+		AuthenticationResponse response = result.getBody();
+		assertThat(response).isNotNull();
+
+		String token = response.getToken();
+
+		Optional<User> query = userRepository.findUserByEmail("bio_auth_test_account@abc_test.test");
+		assertThat(query).isPresent();
+		User testUser = query.get();
+		testUser.setRole(Role.BIOLOGIST);
+		userRepository.save(testUser);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token);
+
+		// Normal User Authorization
+		ParameterizedTypeReference<String> accessResponseType = new ParameterizedTypeReference<>() { };
+		ResponseEntity<String> accessResult = restTemplate.exchange(
+				siteLink + "visitor", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getBody()).isEqualTo("User has access to this resource.");
+
+		// Archaeologist Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "arheo", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
+
+		// Biologist Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "bio", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getBody()).isEqualTo("User has access to this resource.");
+
+		// Admin Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "user/users", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
+
+		userRepository.deleteUserByEmail("bio_auth_test_account@abc_test.test");
+	}
+
+	void testArchaeologistAuthorizationLevel(){
+		RegisterRequest request = RegisterRequest.builder()
+				.email("arheo_auth_test_account@abc_test.test")
+				.password("auth_test")
+				.firstName("auth")
+				.lastName("test")
+				.build();
+
+		ParameterizedTypeReference<AuthenticationResponse> responseType = new ParameterizedTypeReference<AuthenticationResponse>() { };
+		ResponseEntity<AuthenticationResponse> result = restTemplate.exchange(
+				siteLink + "auth/register", HttpMethod.POST,
+				new HttpEntity<>(request), responseType);
+
+		AuthenticationResponse response = result.getBody();
+		assertThat(response).isNotNull();
+
+		String token = response.getToken();
+
+		Optional<User> query = userRepository.findUserByEmail("arheo_auth_test_account@abc_test.test");
+		assertThat(query).isPresent();
+		User testUser = query.get();
+		testUser.setRole(Role.ARCHAEOLOGIST);
+		userRepository.save(testUser);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token);
+
+		// Normal User Authorization
+		ParameterizedTypeReference<String> accessResponseType = new ParameterizedTypeReference<>() { };
+		ResponseEntity<String> accessResult = restTemplate.exchange(
+				siteLink + "visitor", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getBody()).isEqualTo("User has access to this resource.");
+
+		// Archaeologist Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "arheo", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getBody()).isEqualTo("User has access to this resource.");
+
+		// Biologist Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "bio", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
+
+		// Admin Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "user/users", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
+
+		userRepository.deleteUserByEmail("arheo_auth_test_account@abc_test.test");
+	}
+
+	void testAdminAuthorizationLevel(){
+		RegisterRequest request = RegisterRequest.builder()
+				.email("admin_auth_test_account@abc_test.test")
+				.password("auth_test")
+				.firstName("auth")
+				.lastName("test")
+				.build();
+
+		ParameterizedTypeReference<AuthenticationResponse> responseType = new ParameterizedTypeReference<AuthenticationResponse>() { };
+		ResponseEntity<AuthenticationResponse> result = restTemplate.exchange(
+				siteLink + "auth/register", HttpMethod.POST,
+				new HttpEntity<>(request), responseType);
+
+		AuthenticationResponse response = result.getBody();
+		assertThat(response).isNotNull();
+
+		String token = response.getToken();
+
+		Optional<User> query = userRepository.findUserByEmail("admin_auth_test_account@abc_test.test");
+		assertThat(query).isPresent();
+		User testUser = query.get();
+		testUser.setRole(Role.ADMIN);
+		userRepository.save(testUser);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setBearerAuth(token);
+
+		// Normal User Authorization
+		ParameterizedTypeReference<String> accessResponseType = new ParameterizedTypeReference<>() { };
+		ResponseEntity<String> accessResult = restTemplate.exchange(
+				siteLink + "visitor", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getBody()).isEqualTo("User has access to this resource.");
+
+		// Archaeologist Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "arheo", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getBody()).isEqualTo("User has access to this resource.");
+
+		// Biologist Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "bio", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getBody()).isEqualTo("User has access to this resource.");
+
+		// Admin Authorization
+		accessResult = restTemplate.exchange(
+				siteLink + "user/users", HttpMethod.GET, new HttpEntity<>("", headers), accessResponseType);
+
+		assertThat(accessResult.getStatusCode().is4xxClientError()).isFalse();
+		assertThat(accessResult.getStatusCode().is2xxSuccessful()).isTrue();
+
+		userRepository.deleteUserByEmail("admin_auth_test_account@abc_test.test");
 	}
 
 	void cleanAuthTests(){

@@ -14,7 +14,12 @@ public class UserService {
     private final UserRepository userRepository;
 
     public List<User> getUsers(){
-        return userRepository.findAll();
+        List<User> users = userRepository.findAll();
+
+        return users.stream().map((user) -> {
+            user.setPassword("");
+            return user;
+        }).toList();
     }
 
     public User addUser(User user){

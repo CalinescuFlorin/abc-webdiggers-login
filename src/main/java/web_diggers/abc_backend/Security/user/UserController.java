@@ -19,7 +19,6 @@ public class UserController {
     @Autowired
     UserService service;
 
-    // TODO: Hide the passwords
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers(){
         return new ResponseEntity<>(service.getUsers(), HttpStatus.OK);

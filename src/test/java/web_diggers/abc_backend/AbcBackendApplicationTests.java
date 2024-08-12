@@ -10,6 +10,7 @@ import web_diggers.abc_backend.Security.auth.AuthenticationController;
 import web_diggers.abc_backend.Security.auth.model.AuthenticationRequest;
 import web_diggers.abc_backend.Security.auth.model.AuthenticationResponse;
 import web_diggers.abc_backend.Security.auth.model.RegisterRequest;
+import web_diggers.abc_backend.Security.email.EmailSenderService;
 import web_diggers.abc_backend.Security.user.UserController;
 import web_diggers.abc_backend.Security.user.UserRepository;
 import web_diggers.abc_backend.Security.user.model.Role;

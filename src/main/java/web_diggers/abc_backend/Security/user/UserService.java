@@ -88,5 +88,6 @@ public class UserService {
         existingUser.setLastName(user.getLastName());
         existingUser.setRole(user.getRole());
         existingUser.setEnabled(user.isEnabled());
+        userRepository.save(user);
     }
 }

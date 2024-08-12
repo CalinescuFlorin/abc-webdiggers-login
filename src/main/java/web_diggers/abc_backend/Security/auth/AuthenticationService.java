@@ -4,6 +4,7 @@ import web_diggers.abc_backend.Security.auth.model.AuthenticationRequest;
 import web_diggers.abc_backend.Security.auth.model.AuthenticationResponse;
 import web_diggers.abc_backend.Security.auth.model.RegisterRequest;
 import web_diggers.abc_backend.Security.email.ConfirmationTokenService;
+import web_diggers.abc_backend.Security.email.EmailSenderService;
 import web_diggers.abc_backend.Security.email.EmailValidator;
 import web_diggers.abc_backend.Security.jwt.JwtService;
 import web_diggers.abc_backend.Security.user.UserService;
@@ -15,8 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +26,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final EmailValidator emailValidator;
     private final ConfirmationTokenService confirmationTokenService;
+    private final EmailSenderService emailSenderService;
 
     public AuthenticationResponse register(RegisterRequest request) throws Exception{
         if(userService.getUser(request.getEmail()).isPresent())
@@ -45,6 +45,8 @@ public class AuthenticationService {
 
         userService.addUser(user);
         String confirmationToken = confirmationTokenService.generateToken(user);
+        String link = "http://localhost:8080/api/v1/auth/confirm?token=" + confirmationToken;
+        emailSenderService.sendMail(user.getEmail(), "Email Confirmation", this.EmailBodyGenerator(user.getFirstName(), link));
 
         return AuthenticationResponse.builder()
                 .status("success")
@@ -100,5 +102,11 @@ public class AuthenticationService {
                 .lastName(user.getLastName())
                 .role(user.getRole().toString())
                 .build();
+    }
+
+    private String EmailBodyGenerator(String name, String link) {
+        return "Hello " + name + ", \n\n" +
+                "Please verify your email through this link: \n" + link +
+                "\n\n\nKind regards, \nTeam Web Diggers";
     }
 }

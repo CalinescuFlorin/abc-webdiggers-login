@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.security.user.model;
+package web_diggers.abc_backend.Security.user.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,6 +41,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private boolean locked = false;
+    private boolean enabled = false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if(role == null)
@@ -60,6 +63,10 @@ public class User implements UserDetails {
                             new SimpleGrantedAuthority("ROLE_BIOLOGIST"));
             default -> List.of(new SimpleGrantedAuthority("ROLE_USER"));
         };
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -84,6 +91,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }

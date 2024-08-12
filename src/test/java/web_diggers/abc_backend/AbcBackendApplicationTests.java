@@ -6,16 +6,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import web_diggers.abc_backend.security.auth.AuthenticationController;
-import web_diggers.abc_backend.security.auth.model.AuthenticationRequest;
-import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
-import web_diggers.abc_backend.security.auth.model.RegisterRequest;
-import web_diggers.abc_backend.security.user.UserController;
-import web_diggers.abc_backend.security.user.UserRepository;
-import web_diggers.abc_backend.security.user.model.Role;
-import web_diggers.abc_backend.security.user.model.User;
+import web_diggers.abc_backend.Security.auth.AuthenticationController;
+import web_diggers.abc_backend.Security.auth.model.AuthenticationRequest;
+import web_diggers.abc_backend.Security.auth.model.AuthenticationResponse;
+import web_diggers.abc_backend.Security.auth.model.RegisterRequest;
+import web_diggers.abc_backend.Security.email.EmailSenderService;
+import web_diggers.abc_backend.Security.user.UserController;
+import web_diggers.abc_backend.Security.user.UserRepository;
+import web_diggers.abc_backend.Security.user.model.Role;
+import web_diggers.abc_backend.Security.user.model.User;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,6 +50,7 @@ class AbcBackendApplicationTests {
 	void authenticationTests(){
 		registerShouldCreateAccount();
 		registerWithUsedAddressShouldThrowError();
+		registerInvalidEmail();
 		loginWithExistingAccountIsSuccessful();
 		loginWithNonExistingAccountIsUnsuccessful();
 		loginWithIncorrectCredentialsIsUnsuccessful();
@@ -119,6 +120,33 @@ class AbcBackendApplicationTests {
 
 		assertThat(response.getStatus()).isEqualTo("fail");
 		assertThat(response.getMessage()).isEqualTo("Email address is already taken.");
+		assertThat(response.getRole()).isEqualTo("");
+		assertThat(response.getFirstName()).isEqualTo("");
+		assertThat(response.getFirstName()).isEqualTo("");
+		assertThat(response.getToken()).isEqualTo("");
+	}
+
+	void registerInvalidEmail() {
+
+		RegisterRequest request = RegisterRequest.builder()
+				.email("auth_test_account@abc_test")
+				.password("auth_test2")
+				.firstName("auth2")
+				.lastName("test2")
+				.build();
+
+		// Send register request to endpoint
+		ParameterizedTypeReference<AuthenticationResponse> responseType = new ParameterizedTypeReference<AuthenticationResponse>() { };
+		ResponseEntity<AuthenticationResponse> result = restTemplate.exchange(
+				siteLink + "auth/register", HttpMethod.POST,
+				new HttpEntity<>(request), responseType);
+
+		// Verify response
+		AuthenticationResponse response = result.getBody();
+		assertThat(response).isNotNull();
+
+		assertThat(response.getStatus()).isEqualTo("fail");
+		assertThat(response.getMessage()).isEqualTo("Invalid email.");
 		assertThat(response.getRole()).isEqualTo("");
 		assertThat(response.getFirstName()).isEqualTo("");
 		assertThat(response.getFirstName()).isEqualTo("");

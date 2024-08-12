@@ -1,4 +1,4 @@
-package web_diggers.abc_backend;
+package web_diggers.abc_backend.Security.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

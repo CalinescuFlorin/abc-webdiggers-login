@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.security.auth.model;
+package web_diggers.abc_backend.Security.auth.model;
 
 import lombok.*;
 

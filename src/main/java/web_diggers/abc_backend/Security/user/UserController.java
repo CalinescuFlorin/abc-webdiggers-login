@@ -1,10 +1,10 @@
-package web_diggers.abc_backend.security.user;
+package web_diggers.abc_backend.Security.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import web_diggers.abc_backend.common.BasicResponse;
-import web_diggers.abc_backend.security.user.model.DeleteUserRequest;
-import web_diggers.abc_backend.security.user.model.UpdateUserRequest;
-import web_diggers.abc_backend.security.user.model.User;
+import web_diggers.abc_backend.Security.user.model.DeleteUserRequest;
+import web_diggers.abc_backend.Security.user.model.UpdateUserRequest;
+import web_diggers.abc_backend.Security.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class UserController {
     @PutMapping("/users/{id}")
     public ResponseEntity<BasicResponse> updateUser(@RequestBody UpdateUserRequest request, @PathVariable(name="id")int id){
         try{
-            service.updateUser(id, request.getRole());
+            service.changeUserRole(id, request.getRole());
 
             return new ResponseEntity<>(new BasicResponse("success", "Updated user."), HttpStatus.OK);
 
@@ -51,7 +51,7 @@ public class UserController {
     @PutMapping("/users")
     public ResponseEntity<BasicResponse> updateUser(@RequestBody UpdateUserRequest request){
         try{
-            service.updateUser(request.getEmail(), request.getRole());
+            service.changeUserRole(request.getEmail(), request.getRole());
 
             return new ResponseEntity<>(new BasicResponse("success", "Updated user."), HttpStatus.OK);
 

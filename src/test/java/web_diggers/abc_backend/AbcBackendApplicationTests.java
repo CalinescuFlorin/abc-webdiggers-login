@@ -28,10 +28,11 @@ class AbcBackendApplicationTests {
 	private UserController userController;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	EmailSenderService senderService;
 
 	private final String siteLink = "http://localhost:8080/api/v1/";
 	private final TestRestTemplate restTemplate = new TestRestTemplate();
-
 
 	@Test
 	void contextLoads(){

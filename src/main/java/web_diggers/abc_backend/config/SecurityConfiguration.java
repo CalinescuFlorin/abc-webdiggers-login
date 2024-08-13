@@ -26,6 +26,17 @@ public class SecurityConfiguration {
             "/api/v1/auth/**",
             "/api/v1/visitor/**",
             "/api/v1/password_change/**"
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui.html",
+            "/api/v1/visitor/**"
     };
 
     @Bean

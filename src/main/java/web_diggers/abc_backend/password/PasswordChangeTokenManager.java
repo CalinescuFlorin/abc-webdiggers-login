@@ -1,10 +1,11 @@
-package web_diggers.abc_backend.Security.email;
+package web_diggers.abc_backend.password;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class ConfirmationTokenService {
-    // TODO: EXTRACT THIS FROM A CONFIG FILE
-    private static final String SECRET_KEY = "ikemb/kKoJO/Jhi/cO5qBuNl4CbrOlwaFbYyq4K1JeXp+Q43otUbgE6eWCs8xAdL";
+@NoArgsConstructor
+public class PasswordChangeTokenManager {
+    private static final String SECRET_KEY = "od5IYcYDk3hnKJsS3U+1YR2ZYnybQieG4gNQ8kmGynCMPDUrwCpHKKTG/UNz/LjK";
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
     }
@@ -49,7 +50,12 @@ public class ConfirmationTokenService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public boolean isTokenExpired(String token) {
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String userEmail = extractEmail(token);
+        return (userEmail.equals((userDetails.getUsername())) && !isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -62,4 +68,3 @@ public class ConfirmationTokenService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
-

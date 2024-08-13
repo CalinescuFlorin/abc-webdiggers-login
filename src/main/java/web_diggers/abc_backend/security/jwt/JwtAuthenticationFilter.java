@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Security.jwt;
+package web_diggers.abc_backend.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

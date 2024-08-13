@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Security.user.model;
+package web_diggers.abc_backend.password;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeleteUserRequest {
+public class PasswordChangeRequest {
     private String email;
+    private String oldPassword;
+    private String newPassword;
 }

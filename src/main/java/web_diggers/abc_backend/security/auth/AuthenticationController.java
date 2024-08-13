@@ -1,9 +1,9 @@
-package web_diggers.abc_backend.Security.auth;
+package web_diggers.abc_backend.security.auth;
 
 import org.springframework.web.bind.annotation.*;
-import web_diggers.abc_backend.Security.auth.model.AuthenticationRequest;
-import web_diggers.abc_backend.Security.auth.model.AuthenticationResponse;
-import web_diggers.abc_backend.Security.auth.model.RegisterRequest;
+import web_diggers.abc_backend.security.auth.model.AuthenticationRequest;
+import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
+import web_diggers.abc_backend.security.auth.model.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

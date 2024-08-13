@@ -1,15 +1,15 @@
-package web_diggers.abc_backend.Security.auth;
+package web_diggers.abc_backend.security.auth;
 
-import web_diggers.abc_backend.Security.auth.model.AuthenticationRequest;
-import web_diggers.abc_backend.Security.auth.model.AuthenticationResponse;
-import web_diggers.abc_backend.Security.auth.model.RegisterRequest;
-import web_diggers.abc_backend.Security.email.ConfirmationTokenService;
-import web_diggers.abc_backend.Security.email.EmailSenderService;
-import web_diggers.abc_backend.Security.email.EmailValidator;
-import web_diggers.abc_backend.Security.jwt.JwtService;
-import web_diggers.abc_backend.Security.user.UserService;
-import web_diggers.abc_backend.Security.user.model.Role;
-import web_diggers.abc_backend.Security.user.model.User;
+import web_diggers.abc_backend.security.auth.model.AuthenticationRequest;
+import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
+import web_diggers.abc_backend.security.auth.model.RegisterRequest;
+import web_diggers.abc_backend.security.email.ConfirmationTokenService;
+import web_diggers.abc_backend.security.email.EmailSenderService;
+import web_diggers.abc_backend.security.email.EmailValidator;
+import web_diggers.abc_backend.security.jwt.JwtService;
+import web_diggers.abc_backend.security.user.UserService;
+import web_diggers.abc_backend.security.user.model.Role;
+import web_diggers.abc_backend.security.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Security.auth.model;
+package web_diggers.abc_backend.security.user.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
+public class UpdateUserRequest {
     private String email;
-    private String password;
+    private String role;
 }

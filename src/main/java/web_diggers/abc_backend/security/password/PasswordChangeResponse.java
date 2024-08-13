@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.password;
+package web_diggers.abc_backend.security.password;
 
 import lombok.*;
 

@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.password;
+package web_diggers.abc_backend.security.password;
 
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class PasswordChangeService {
     public PasswordChangeResponse sendChangePasswordMail(PasswordChangeRequest request) throws Exception {
         String email = request.getEmail();
 
-        Optional<web_diggers.abc_backend.security.user.model.User> userOptional = userService.getUser(email);
+        Optional<User> userOptional = userService.getUser(email);
 
         if (userOptional.isEmpty()) {
             return new PasswordChangeResponse("fail", "User not found");
@@ -51,7 +51,6 @@ public class PasswordChangeService {
         if (userOptional.isEmpty()) {
             return new PasswordChangeResponse("fail", "User not found");
         }
-
 
         User user = userOptional.get();
         user.setPassword(passwordEncoder.encode(newPassword));

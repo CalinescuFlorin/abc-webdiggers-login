@@ -1,11 +1,10 @@
-package web_diggers.abc_backend.password;
+package web_diggers.abc_backend.security.password;
 
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
 
 
 @RestController
@@ -15,14 +14,14 @@ public class PasswordChangeController {
     private final PasswordChangeService passwordChangeService;
 
     @PostMapping("/change")
-    private ResponseEntity<PasswordChangeResponse> sendMail(@RequestBody PasswordChangeRequest request) {
+    private ResponseEntity<PasswordChangeResponse> sendChangePasswordMail(@RequestBody PasswordChangeRequest request) {
         try{
             return new ResponseEntity<>(passwordChangeService.sendChangePasswordMail(request), HttpStatus.OK);
 
         }catch(Exception e){
             return new ResponseEntity<>(new PasswordChangeResponse("fail", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }co
 
     @PostMapping("/confirm_forgotten")
     public ResponseEntity<PasswordChangeResponse> confirmForgottenPassword(@RequestBody PasswordChangeRequest request){

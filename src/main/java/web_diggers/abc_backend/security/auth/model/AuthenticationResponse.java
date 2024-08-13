@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Security.auth.model;
+package web_diggers.abc_backend.security.auth.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

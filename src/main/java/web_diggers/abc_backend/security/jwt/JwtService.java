@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Security.email;
+package web_diggers.abc_backend.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,9 +15,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class ConfirmationTokenService {
+public class JwtService {
     // TODO: EXTRACT THIS FROM A CONFIG FILE
-    private static final String SECRET_KEY = "ikemb/kKoJO/Jhi/cO5qBuNl4CbrOlwaFbYyq4K1JeXp+Q43otUbgE6eWCs8xAdL";
+    private static final String SECRET_KEY = "50d2d8da1688f21be2b6645acbb3c364659d604a08c818a1d6366131675b4d0f";
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
     }
@@ -40,7 +40,7 @@ public class ConfirmationTokenService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration((new Date(System.currentTimeMillis() + 1000 * 60 * 15)))
+                .setExpiration((new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 8)))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -49,7 +49,12 @@ public class ConfirmationTokenService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public boolean isTokenExpired(String token) {
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+        final String userEmail = extractEmail(token);
+        return (userEmail.equals((userDetails.getUsername())) && !isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -62,4 +67,3 @@ public class ConfirmationTokenService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
-

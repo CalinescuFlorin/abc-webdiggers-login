@@ -6,15 +6,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import web_diggers.abc_backend.Security.auth.AuthenticationController;
-import web_diggers.abc_backend.Security.auth.model.AuthenticationRequest;
-import web_diggers.abc_backend.Security.auth.model.AuthenticationResponse;
-import web_diggers.abc_backend.Security.auth.model.RegisterRequest;
-import web_diggers.abc_backend.Security.email.EmailSenderService;
-import web_diggers.abc_backend.Security.user.UserController;
-import web_diggers.abc_backend.Security.user.UserRepository;
-import web_diggers.abc_backend.Security.user.model.Role;
-import web_diggers.abc_backend.Security.user.model.User;
+import web_diggers.abc_backend.security.auth.AuthenticationController;
+import web_diggers.abc_backend.security.auth.model.AuthenticationRequest;
+import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
+import web_diggers.abc_backend.security.auth.model.RegisterRequest;
+import web_diggers.abc_backend.security.email.EmailSenderService;
+import web_diggers.abc_backend.security.user.UserController;
+import web_diggers.abc_backend.security.user.UserRepository;
+import web_diggers.abc_backend.security.user.model.Role;
+import web_diggers.abc_backend.security.user.model.User;
 
 import java.util.Optional;
 

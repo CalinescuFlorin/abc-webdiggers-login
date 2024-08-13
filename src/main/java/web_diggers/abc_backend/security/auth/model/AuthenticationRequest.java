@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Security.user.model;
+package web_diggers.abc_backend.security.auth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeleteUserRequest {
+public class AuthenticationRequest {
     private String email;
+    private String password;
+    private String verificationCode;
 }

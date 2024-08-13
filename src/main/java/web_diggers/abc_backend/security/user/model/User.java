@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Security.user.model;
+package web_diggers.abc_backend.security.user.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

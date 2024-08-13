@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Security.user.model;
+package web_diggers.abc_backend.security.user.model;
 
 public enum Role {
     USER("ROLE_USER"),

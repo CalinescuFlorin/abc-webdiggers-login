@@ -1,21 +1,21 @@
-package web_diggers.abc_backend.Security.auth;
+package web_diggers.abc_backend.security.auth;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
-import web_diggers.abc_backend.Security.TwoFactorAuth.TwoFactorAuthService;
-import web_diggers.abc_backend.Security.auth.model.AuthenticationRequest;
-import web_diggers.abc_backend.Security.auth.model.AuthenticationResponse;
-import web_diggers.abc_backend.Security.auth.model.RegisterRequest;
-import web_diggers.abc_backend.Security.auth.model.VerificationRequest;
+import web_diggers.abc_backend.security.TwoFactorAuth.TwoFactorAuthService;
+import web_diggers.abc_backend.security.auth.model.AuthenticationRequest;
+import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
+import web_diggers.abc_backend.security.auth.model.RegisterRequest;
+import web_diggers.abc_backend.security.auth.model.VerificationRequest;
 
-import web_diggers.abc_backend.Security.email.ConfirmationTokenService;
-import web_diggers.abc_backend.Security.email.EmailSenderService;
-import web_diggers.abc_backend.Security.email.EmailValidator;
+import web_diggers.abc_backend.security.email.ConfirmationTokenService;
+import web_diggers.abc_backend.security.email.EmailSenderService;
+import web_diggers.abc_backend.security.email.EmailValidator;
 
-import web_diggers.abc_backend.Security.jwt.JwtService;
-import web_diggers.abc_backend.Security.user.UserService;
-import web_diggers.abc_backend.Security.user.model.Role;
-import web_diggers.abc_backend.Security.user.model.User;
+import web_diggers.abc_backend.security.jwt.JwtService;
+import web_diggers.abc_backend.security.user.UserService;
+import web_diggers.abc_backend.security.user.model.Role;
+import web_diggers.abc_backend.security.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -78,10 +78,10 @@ public class AuthenticationService {
         String email = confirmationTokenService.extractEmail(confirmationToken);
 
         if(confirmationTokenService.isTokenExpired(confirmationToken))
-            throw new Exception("Email confirmation time expired");
+            throw new Exception("Email confirmation time expired.");
 
         User user = userService.getUser(email)
-                .orElseThrow(() -> new Exception("No such account with this email"));
+                .orElseThrow(() -> new Exception("No such account with this email."));
         user.setEnabled(true);
         userService.updateUser(user);
 
@@ -92,6 +92,8 @@ public class AuthenticationService {
                 .firstName("")
                 .lastName("")
                 .role("")
+                .enabled2FA(false)
+                .secretImageUri("")
                 .build();
     }
 
@@ -138,10 +140,12 @@ public class AuthenticationService {
                 .orElseThrow(()-> new EntityNotFoundException(String.format("No user found with %S", verificationRequest.getEmail()))
                 );
         if(tfaService.isOtpNotValid(user.getCodeFor2FA(), verificationRequest.getCode())){
-            throw new BadCredentialsException("Code is not correct");
+            throw new BadCredentialsException("Code is not correct.");
         }
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
+                .status("success")
+                .message("Validated 2FA code.")
                 .token(jwtToken)
                 .enabled2FA(user.isEnabled2FA())
                 .build();

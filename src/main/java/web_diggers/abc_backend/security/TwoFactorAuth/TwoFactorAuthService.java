@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.Security.TwoFactorAuth;
+package web_diggers.abc_backend.security.TwoFactorAuth;
 import dev.samstevens.totp.code.*;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import dev.samstevens.totp.qr.QrData;

@@ -21,7 +21,7 @@ public class PasswordChangeController {
         }catch(Exception e){
             return new ResponseEntity<>(new PasswordChangeResponse("fail", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }co
+    }
 
     @PostMapping("/confirm_forgotten")
     public ResponseEntity<PasswordChangeResponse> confirmForgottenPassword(@RequestBody PasswordChangeRequest request){

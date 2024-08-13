@@ -35,9 +35,6 @@ public class User implements UserDetails {
 
     private String password;
 
-    private boolean enabled2FA;
-    private String codeFor2FA;
-
     @Column(unique=true)
     private String email;
 

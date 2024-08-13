@@ -27,7 +27,7 @@ public class UserController {
     @PutMapping("/users/{id}")
     public ResponseEntity<BasicResponse> updateUser(@RequestBody UpdateUserRequest request, @PathVariable(name="id")int id){
         try{
-            service.updateUser(id, request.getRole());
+            service.changeUserRole(id, request.getRole());
 
             return new ResponseEntity<>(new BasicResponse("success", "Updated user."), HttpStatus.OK);
 
@@ -51,7 +51,7 @@ public class UserController {
     @PutMapping("/users")
     public ResponseEntity<BasicResponse> updateUser(@RequestBody UpdateUserRequest request){
         try{
-            service.updateUser(request.getEmail(), request.getRole());
+            service.changeUserRole(request.getEmail(), request.getRole());
 
             return new ResponseEntity<>(new BasicResponse("success", "Updated user."), HttpStatus.OK);
 

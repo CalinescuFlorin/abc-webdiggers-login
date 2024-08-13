@@ -1,5 +1,6 @@
 package web_diggers.abc_backend.Security.auth;
 
+import org.springframework.web.bind.annotation.*;
 import web_diggers.abc_backend.Security.auth.model.AuthenticationRequest;
 import web_diggers.abc_backend.Security.auth.model.AuthenticationResponse;
 import web_diggers.abc_backend.Security.auth.model.RegisterRequest;
@@ -58,6 +59,19 @@ public class AuthenticationController {
 //            );
 //        }
 //    }
+  
+    @GetMapping("/confirm")
+    public ResponseEntity<AuthenticationResponse> confirmEmail(@RequestParam String token){
+        try{
+            return new ResponseEntity<>(service.confirmEmail(token), HttpStatus.OK);
+
+        }catch(Exception e){
+            return new ResponseEntity<>(
+                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", ""),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticateUser(@RequestBody AuthenticationRequest request){

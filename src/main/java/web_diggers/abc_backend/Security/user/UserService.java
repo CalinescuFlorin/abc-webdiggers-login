@@ -34,7 +34,7 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public void updateUser(int id, String newRole) throws Exception{
+    public void changeUserRole(int id, String newRole) throws Exception{
         Optional<User> query = userRepository.findById(id);
         if(query.isEmpty())
             throw new Exception("Cannot update user that does not exist.");
@@ -59,7 +59,7 @@ public class UserService {
         return userRepository.findUserByEmail(email);
     }
 
-    public void updateUser(String email, String newRole) throws Exception{
+    public void changeUserRole(String email, String newRole) throws Exception{
         Optional<User> query = userRepository.findUserByEmail(email);
         if(query.isEmpty())
             throw new Exception("Cannot update user that does not exist.");
@@ -74,5 +74,20 @@ public class UserService {
             throw new Exception("Cannot delete user that does not exist.");
 
         userRepository.deleteUserByEmail(email);
+    }
+
+    public void updateUser(User user) throws Exception{
+        Optional<User> query = userRepository.findById(user.getId());
+        if(query.isEmpty())
+            throw new Exception("Cannot update user that does not exist.");
+
+        User existingUser = query.get();
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setFirstName(user.getFirstName());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setRole(user.getRole());
+        existingUser.setEnabled(user.isEnabled());
+        userRepository.save(user);
     }
 }

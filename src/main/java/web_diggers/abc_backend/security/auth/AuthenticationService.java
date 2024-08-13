@@ -82,6 +82,7 @@ public class AuthenticationService {
 
         User user = userService.getUser(email)
                 .orElseThrow(() -> new Exception("No such account with this email."));
+
         user.setEnabled(true);
         userService.updateUser(user);
 

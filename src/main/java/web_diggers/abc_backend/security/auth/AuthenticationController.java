@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +33,7 @@ public class AuthenticationController {
             );
         }
     }
-  
+
     @GetMapping("/confirm")
     public ResponseEntity<AuthenticationResponse> confirmEmail(@RequestParam String token){
         try{
@@ -78,5 +79,3 @@ public class AuthenticationController {
         }
     }
 }
-
-

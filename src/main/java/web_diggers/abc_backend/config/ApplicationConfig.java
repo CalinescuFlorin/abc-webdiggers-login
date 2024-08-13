@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import web_diggers.abc_backend.security.user.UserRepository;
+import web_diggers.abc_backend.Security.user.UserRepository;
 
 import javax.sql.DataSource;
 

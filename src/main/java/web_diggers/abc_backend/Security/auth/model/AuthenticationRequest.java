@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.security.auth.model;
+package web_diggers.abc_backend.Security.auth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class AuthenticationRequest {
     private String email;
     private String password;
+    private String verificationCode;
 }

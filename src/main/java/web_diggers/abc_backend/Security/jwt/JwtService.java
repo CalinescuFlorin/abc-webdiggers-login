@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.security.jwt;
+package web_diggers.abc_backend.Security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

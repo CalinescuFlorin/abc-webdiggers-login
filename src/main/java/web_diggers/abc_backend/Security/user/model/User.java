@@ -1,4 +1,4 @@
-package web_diggers.abc_backend.security.user.model;
+package web_diggers.abc_backend.Security.user.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,6 +34,9 @@ public class User implements UserDetails {
     private String lastName;
 
     private String password;
+
+    private boolean enabled2FA;
+    private String codeFor2FA;
 
     @Column(unique=true)
     private String email;

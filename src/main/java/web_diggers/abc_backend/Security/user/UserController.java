@@ -1,10 +1,10 @@
-package web_diggers.abc_backend.security.user;
+package web_diggers.abc_backend.Security.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import web_diggers.abc_backend.common.BasicResponse;
-import web_diggers.abc_backend.security.user.model.DeleteUserRequest;
-import web_diggers.abc_backend.security.user.model.UpdateUserRequest;
-import web_diggers.abc_backend.security.user.model.User;
+import web_diggers.abc_backend.Security.user.model.DeleteUserRequest;
+import web_diggers.abc_backend.Security.user.model.UpdateUserRequest;
+import web_diggers.abc_backend.Security.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

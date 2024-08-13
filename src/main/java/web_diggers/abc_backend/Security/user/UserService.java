@@ -1,7 +1,7 @@
-package web_diggers.abc_backend.security.user;
+package web_diggers.abc_backend.Security.user;
 
-import web_diggers.abc_backend.security.user.model.Role;
-import web_diggers.abc_backend.security.user.model.User;
+import web_diggers.abc_backend.Security.user.model.Role;
+import web_diggers.abc_backend.Security.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

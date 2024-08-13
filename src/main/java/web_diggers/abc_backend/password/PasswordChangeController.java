@@ -4,10 +4,8 @@ package web_diggers.abc_backend.password;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
 
 
 @RestController
@@ -17,12 +15,26 @@ public class PasswordChangeController {
     private final PasswordChangeService passwordChangeService;
 
     @PostMapping("/change")
-    private ResponseEntity<PasswordChangeResponse> changePassword(@RequestBody PasswordChangeRequest request) {
+    private ResponseEntity<PasswordChangeResponse> sendMail(@RequestBody PasswordChangeRequest request) {
         try{
-            return new ResponseEntity<>(passwordChangeService.changePassword(request.getEmail(), request.getNewPassword()), HttpStatus.OK);
+            return new ResponseEntity<>(passwordChangeService.sendChangePasswordMail(request), HttpStatus.OK);
 
         }catch(Exception e){
             return new ResponseEntity<>(new PasswordChangeResponse("fail", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/confirm_change")
+    public ResponseEntity<PasswordChangeResponse> confirmForgottenPassword(@RequestBody PasswordChangeRequest request){
+        try{
+            return new ResponseEntity<>(passwordChangeService.changePassword(request), HttpStatus.OK);
+
+        }catch(Exception e){
+            return new ResponseEntity<>(
+                    new PasswordChangeResponse("fail", e.getMessage()),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
 }

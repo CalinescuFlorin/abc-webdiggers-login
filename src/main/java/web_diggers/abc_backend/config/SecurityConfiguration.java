@@ -24,7 +24,8 @@ public class SecurityConfiguration {
     // Endpoints accessible by anyone
     private static final String[] WHITE_LIST_URL = {
             "/api/v1/auth/**",
-            "/api/v1/visitor/**"
+            "/api/v1/visitor/**",
+            "/api/v1/password_change/**"
     };
 
     @Bean

@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,9 @@ import java.util.function.Function;
 @Service
 @NoArgsConstructor
 public class PasswordChangeTokenManager {
-    private static final String SECRET_KEY = "od5IYcYDk3hnKJsS3U+1YR2ZYnybQieG4gNQ8kmGynCMPDUrwCpHKKTG/UNz/LjK";
+    @Value("${secrets.change-password-secret-key}")
+    private String SECRET_KEY="";
+//    private static final String SECRET_KEY = "od5IYcYDk3hnKJsS3U+1YR2ZYnybQieG4gNQ8kmGynCMPDUrwCpHKKTG/UNz/LjK";
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
     }

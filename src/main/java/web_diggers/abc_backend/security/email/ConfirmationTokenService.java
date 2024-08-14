@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,9 @@ import java.util.function.Function;
 @Service
 public class ConfirmationTokenService {
     // TODO: EXTRACT THIS FROM A CONFIG FILE
-    private static final String SECRET_KEY = "ikemb/kKoJO/Jhi/cO5qBuNl4CbrOlwaFbYyq4K1JeXp+Q43otUbgE6eWCs8xAdL";
+    @Value("${secrets.confirmation-token-key}")
+    private String SECRET_KEY="";
+//    private static final String SECRET_KEY = "ikemb/kKoJO/Jhi/cO5qBuNl4CbrOlwaFbYyq4K1JeXp+Q43otUbgE6eWCs8xAdL";
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
     }

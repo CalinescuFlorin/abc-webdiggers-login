@@ -83,7 +83,7 @@ class AbcBackendApplicationTests {
 		assertThat(response).isNotNull();
 
 		assertThat(response.getStatus()).isEqualTo("success");
-		assertThat(response.getMessage()).isEqualTo("Account created.");
+		assertThat(response.getMessage()).isEqualTo("Account created");
 		assertThat(response.getRole()).isEqualTo("USER");
 		assertThat(response.getFirstName()).isEqualTo("auth");
 		assertThat(response.getLastName()).isEqualTo("test");
@@ -98,6 +98,9 @@ class AbcBackendApplicationTests {
 		assertThat(testUser.getFirstName()).isEqualTo("auth");
 		assertThat(testUser.getLastName()).isEqualTo("test");
 		assertThat(testUser.getPassword()).isNotNull();
+
+		testUser.setEnabled(true);
+		userRepository.save(testUser);
 	}
 
 	void registerWithUsedAddressShouldThrowError(){
@@ -146,7 +149,7 @@ class AbcBackendApplicationTests {
 		assertThat(response).isNotNull();
 
 		assertThat(response.getStatus()).isEqualTo("fail");
-		assertThat(response.getMessage()).isEqualTo("Invalid email.");
+		assertThat(response.getMessage()).isEqualTo("Invalid email");
 		assertThat(response.getRole()).isEqualTo("");
 		assertThat(response.getFirstName()).isEqualTo("");
 		assertThat(response.getFirstName()).isEqualTo("");
@@ -170,7 +173,7 @@ class AbcBackendApplicationTests {
 		assertThat(response).isNotNull();
 
 		assertThat(response.getStatus()).isEqualTo("success");
-		assertThat(response.getMessage()).isEqualTo("Login successful.");
+		assertThat(response.getMessage()).isEqualTo("Login successful");
 		assertThat(response.getRole()).isEqualTo("USER");
 		assertThat(response.getFirstName()).isEqualTo("auth");
 		assertThat(response.getLastName()).isEqualTo("test");
@@ -243,6 +246,14 @@ class AbcBackendApplicationTests {
 
 		String token = response.getToken();
 
+		// Skip email verification for testing purposes
+		Optional<User> query = userRepository.findUserByEmail("auth_test_account@abc_test.test");
+		assertThat(query).isPresent();
+		User testUser = query.get();
+
+		testUser.setEnabled(true);
+		userRepository.save(testUser);
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token);
 
@@ -296,6 +307,7 @@ class AbcBackendApplicationTests {
 		assertThat(query).isPresent();
 		User testUser = query.get();
 		testUser.setRole(Role.BIOLOGIST);
+		testUser.setEnabled(true);
 		userRepository.save(testUser);
 
 		HttpHeaders headers = new HttpHeaders();
@@ -351,6 +363,7 @@ class AbcBackendApplicationTests {
 		assertThat(query).isPresent();
 		User testUser = query.get();
 		testUser.setRole(Role.ARCHAEOLOGIST);
+		testUser.setEnabled(true);
 		userRepository.save(testUser);
 
 		HttpHeaders headers = new HttpHeaders();
@@ -406,6 +419,7 @@ class AbcBackendApplicationTests {
 		assertThat(query).isPresent();
 		User testUser = query.get();
 		testUser.setRole(Role.ADMIN);
+		testUser.setEnabled(true);
 		userRepository.save(testUser);
 
 		HttpHeaders headers = new HttpHeaders();

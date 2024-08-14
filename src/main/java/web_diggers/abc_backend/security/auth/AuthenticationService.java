@@ -1,8 +1,12 @@
 package web_diggers.abc_backend.security.auth;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
+import web_diggers.abc_backend.security.TwoFactorAuth.TwoFactorAuthService;
 import web_diggers.abc_backend.security.auth.model.AuthenticationRequest;
 import web_diggers.abc_backend.security.auth.model.AuthenticationResponse;
 import web_diggers.abc_backend.security.auth.model.RegisterRequest;
+import web_diggers.abc_backend.security.auth.model.VerificationRequest;
 import web_diggers.abc_backend.security.email.ConfirmationTokenService;
 import web_diggers.abc_backend.security.email.EmailSenderService;
 import web_diggers.abc_backend.security.email.EmailValidator;
@@ -27,20 +31,27 @@ public class AuthenticationService {
     private final EmailValidator emailValidator;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSenderService emailSenderService;
+    private final TwoFactorAuthService tfaService;
 
     public AuthenticationResponse register(RegisterRequest request) throws Exception{
         if(userService.getUser(request.getEmail()).isPresent())
-            throw new Exception("Email address is already taken.");
+            throw new Exception("Email address is already taken");
 
-        User user = User.builder().firstName(request.getFirstName())
+        User user = User.builder()
+                .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .enabled2FA(request.isEnabled2FA())
                 .build();
 
         if(!emailValidator.test(user.getEmail())) {
-            throw new Exception("Invalid email.");
+            throw new Exception("Invalid email");
+        }
+
+        if(request.isEnabled2FA()){
+            user.setCodeFor2FA(tfaService.generateNewCode());
         }
 
         userService.addUser(user);
@@ -48,14 +59,20 @@ public class AuthenticationService {
         String link = "http://localhost:8080/api/v1/auth/confirm?token=" + confirmationToken;
         emailSenderService.sendMail(user.getEmail(), "Email Confirmation", this.EmailBodyGenerator(user.getFirstName(), link));
 
-        return AuthenticationResponse.builder()
+        AuthenticationResponse response = AuthenticationResponse.builder()
                 .status("success")
-                .message("Account created.")
+                .message("Account created")
                 .token(confirmationToken)
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole().toString())
+                .enabled2FA(user.isEnabled2FA())
                 .build();
+
+        if(request.isEnabled2FA())
+            response.setSecretImageUri(tfaService.generateQrCodeImageUrl(user.getCodeFor2FA(), user.getEmail()));
+
+        return response;
     }
 
     public AuthenticationResponse confirmEmail(String confirmationToken) throws Exception{
@@ -66,12 +83,13 @@ public class AuthenticationService {
 
         User user = userService.getUser(email)
                 .orElseThrow(() -> new Exception("No such account with this email"));
+
         user.setEnabled(true);
         userService.updateUser(user);
 
         return AuthenticationResponse.builder()
                 .status("success")
-                .message("Email confirmed.")
+                .message("Email confirmed")
                 .token(confirmationToken)
                 .firstName("")
                 .lastName("")
@@ -89,18 +107,50 @@ public class AuthenticationService {
                 .orElseThrow();
 
         if(!user.isEnabled()) {
-            throw new Exception("Email was not confirmed.");
+            throw new Exception("Email was not confirmed");
+        }
+
+        if(user.isEnabled2FA()){
+            return AuthenticationResponse.builder()
+                    .status("2fa_pending")
+                    .message("Login successful")
+                    .token("")
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .role(user.getRole().toString())
+                    .enabled2FA(true)
+                    .build();
         }
 
         String jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
                 .status("success")
-                .message("Login successful.")
+                .message("Login successful")
                 .token(jwtToken)
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole().toString())
+                .enabled2FA(false)
+                .build();
+    }
+
+    public AuthenticationResponse verifyCode(VerificationRequest verificationRequest) {
+        User user = userService.getUser(verificationRequest.getEmail())
+                .orElseThrow(()-> new EntityNotFoundException(String.format("No user found with %S", verificationRequest.getEmail()))
+                );
+
+        if(tfaService.isOtpNotValid(user.getCodeFor2FA(), verificationRequest.getCode())){
+            throw new BadCredentialsException("Code is not correct.");
+        }
+
+        String jwtToken = jwtService.generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .status("success")
+                .message("Validated 2FA code.")
+                .token(jwtToken)
+                .enabled2FA(user.isEnabled2FA())
                 .build();
     }
 

@@ -17,10 +17,9 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    // TODO: EXTRACT THIS FROM A CONFIG FILE
-    @Value("${secrets.Register-secret-key}")
+    @Value("${secrets.register-secret-key}")
     private String SECRET_KEY="";
-//    private static final String SECRET_KEY = "50d2d8da1688f21be2b6645acbb3c364659d604a08c818a1d6366131675b4d0f";
+
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
     }

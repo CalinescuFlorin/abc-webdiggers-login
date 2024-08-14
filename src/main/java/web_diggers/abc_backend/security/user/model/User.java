@@ -41,6 +41,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private boolean enabled2FA = false;
+    private String codeFor2FA = "";
+
     private boolean locked = false;
     private boolean enabled = false;
 

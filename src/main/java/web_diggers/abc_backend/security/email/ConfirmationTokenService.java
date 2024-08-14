@@ -17,10 +17,9 @@ import java.util.function.Function;
 
 @Service
 public class ConfirmationTokenService {
-    // TODO: EXTRACT THIS FROM A CONFIG FILE
     @Value("${secrets.confirmation-token-key}")
     private String SECRET_KEY="";
-//    private static final String SECRET_KEY = "ikemb/kKoJO/Jhi/cO5qBuNl4CbrOlwaFbYyq4K1JeXp+Q43otUbgE6eWCs8xAdL";
+
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
     }

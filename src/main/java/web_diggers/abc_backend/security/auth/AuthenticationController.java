@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import web_diggers.abc_backend.security.auth.model.VerificationRequest;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -22,7 +23,7 @@ public class AuthenticationController {
 
         }catch(Exception e){
             return new ResponseEntity<>(
-                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", ""),
+                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", "", false, ""),
                     HttpStatus.BAD_REQUEST
             );
         }
@@ -35,7 +36,7 @@ public class AuthenticationController {
 
         }catch(Exception e){
             return new ResponseEntity<>(
-                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", ""),
+                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", "", false, ""),
                     HttpStatus.BAD_REQUEST
             );
         }
@@ -48,14 +49,28 @@ public class AuthenticationController {
 
         }catch(Exception e){
             return new ResponseEntity<>(
-                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", ""),
+                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", "", false, ""),
                     HttpStatus.BAD_REQUEST
             );
         }
     }
 
     @RequestMapping("/logout")
-    public void authenticateUser() {
+    public void logoutUser() {
         SecurityContextHolder.clearContext();
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<AuthenticationResponse> verify2FACode(@RequestBody VerificationRequest verificationRequest)
+    {
+        try{
+            return new ResponseEntity<>(service.verifyCode(verificationRequest), HttpStatus.OK);
+
+        }catch(Exception e){
+            return new ResponseEntity<>(
+                    new AuthenticationResponse("fail", e.getMessage(), "", "", "", "", false, ""),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 }

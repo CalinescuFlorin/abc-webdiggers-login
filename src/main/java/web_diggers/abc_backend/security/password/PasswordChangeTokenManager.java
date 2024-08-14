@@ -21,7 +21,7 @@ import java.util.function.Function;
 public class PasswordChangeTokenManager {
     @Value("${secrets.change-password-secret-key}")
     private String SECRET_KEY="";
-//    private static final String SECRET_KEY = "od5IYcYDk3hnKJsS3U+1YR2ZYnybQieG4gNQ8kmGynCMPDUrwCpHKKTG/UNz/LjK";
+
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
     }

@@ -79,8 +79,6 @@ public class PasswordChangeService {
 
         User user = userOptional.get();
 
-
-
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             return new PasswordChangeResponse("fail", "Old password does not match");
         }

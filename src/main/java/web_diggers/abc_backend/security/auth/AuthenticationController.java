@@ -69,11 +69,6 @@ public class AuthenticationController {
         }
     }
 
-    @RequestMapping("/logout")
-    public void logoutUser() {
-        SecurityContextHolder.clearContext();
-    }
-
     @PostMapping("/verify")
     public ResponseEntity<AuthenticationResponse> verify2FACode(@RequestBody VerificationRequest verificationRequest)
     {

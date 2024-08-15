@@ -2,12 +2,17 @@ package web_diggers.abc_backend.security.password;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import web_diggers.abc_backend.common.BasicResponse;
+import web_diggers.abc_backend.doc.PasswordChangeEmailRequest;
+import web_diggers.abc_backend.doc.PasswordForgottenRequest;
 
 
 @RestController
@@ -31,7 +36,10 @@ public class PasswordChangeController {
             }
     )
     @PostMapping("/change")
-    private ResponseEntity<PasswordChangeResponse> sendChangePasswordMail(@RequestBody PasswordChangeRequest request) {
+    private ResponseEntity<PasswordChangeResponse> sendChangePasswordMail(@io.swagger.v3.oas.annotations.parameters.RequestBody(content = {
+            @Content(mediaType = "application/json", schema =
+            @Schema(implementation = PasswordChangeEmailRequest.class))
+    }) PasswordChangeRequest request) {
         try{
             return new ResponseEntity<>(passwordChangeService.sendChangePasswordMail(request), HttpStatus.OK);
 
@@ -54,7 +62,10 @@ public class PasswordChangeController {
             }
     )
     @PostMapping("/confirm_forgotten")
-    public ResponseEntity<PasswordChangeResponse> confirmForgottenPassword(@RequestBody PasswordChangeRequest request){
+    public ResponseEntity<PasswordChangeResponse> confirmForgottenPassword(@io.swagger.v3.oas.annotations.parameters.RequestBody(content = {
+            @Content(mediaType = "application/json", schema =
+            @Schema(implementation = PasswordForgottenRequest.class))
+    }) PasswordChangeRequest request){
         try{
             return new ResponseEntity<>(passwordChangeService.changeForgottenPassword(request), HttpStatus.OK);
 

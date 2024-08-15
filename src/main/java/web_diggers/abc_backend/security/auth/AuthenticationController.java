@@ -55,7 +55,7 @@ public class AuthenticationController {
         }
     }
 
-    @RequestMapping("/logout")
+    @GetMapping("/logout")
     public void logoutUser() {
         SecurityContextHolder.clearContext();
     }

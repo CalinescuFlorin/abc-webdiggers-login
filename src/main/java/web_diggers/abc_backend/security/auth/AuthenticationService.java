@@ -28,12 +28,15 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final EmailValidator emailValidator;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSenderService emailSenderService;
     private final TwoFactorAuthService tfaService;
-
+    private final AuthRequestValidator requestValidator;
     public AuthenticationResponse register(RegisterRequest request) throws Exception{
+        String requestValidation = requestValidator.validateRegisterRequest(request);
+        if(!requestValidation.isEmpty())
+            throw new Exception(requestValidation);
+
         if(userService.getUser(request.getEmail()).isPresent())
             throw new Exception("Email address is already taken");
 
@@ -45,10 +48,6 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .enabled2FA(request.isEnabled2FA())
                 .build();
-
-        if(!emailValidator.test(user.getEmail())) {
-            throw new Exception("Invalid email");
-        }
 
         if(request.isEnabled2FA()){
             user.setCodeFor2FA(tfaService.generateNewCode());

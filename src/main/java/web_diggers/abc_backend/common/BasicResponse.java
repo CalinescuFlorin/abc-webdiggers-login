@@ -20,7 +20,7 @@ public class BasicResponse {
 
     @Schema(
             description = "Detailed message explaining what happened",
-            name = "status",
+            name = "message",
             type = "string",
             example = "success / fail")
     private String message;

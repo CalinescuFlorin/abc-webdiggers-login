@@ -22,6 +22,6 @@ public class BasicResponse {
             description = "Detailed message explaining what happened",
             name = "message",
             type = "string",
-            example = "success / fail")
+            example = "Response message")
     private String message;
 }

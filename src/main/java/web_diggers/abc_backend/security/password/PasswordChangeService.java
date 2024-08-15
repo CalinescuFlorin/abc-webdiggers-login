@@ -2,6 +2,7 @@ package web_diggers.abc_backend.security.password;
 
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import web_diggers.abc_backend.security.email.EmailSenderService;
@@ -18,14 +19,20 @@ public class PasswordChangeService {
     private final UserRepository userRepository;
     private final EmailSenderService emailSenderService;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordChangeRequestValidator passwordChangeRequestValidator;
 
     public PasswordChangeResponse sendChangePasswordMail(PasswordChangeRequest request) throws Exception {
+        String validationErrors = passwordChangeRequestValidator.validatePasswordChangeRequestEmail(request);
+        if(!StringUtils.isBlank(validationErrors)){
+            throw new Exception(validationErrors);
+        }
+
         String email = request.getEmail();
 
         Optional<User> userOptional = userService.getUser(email);
 
         if (userOptional.isEmpty()) {
-            return new PasswordChangeResponse("fail", "User not found");
+            throw new Exception("User not found");
         }
 
         User user = userOptional.get();
@@ -37,19 +44,23 @@ public class PasswordChangeService {
     }
 
     public PasswordChangeResponse changeForgottenPassword(PasswordChangeRequest request) throws Exception {
+        String validationErrors = passwordChangeRequestValidator.validatePasswordChangeRequestForgotten(request);
+        if(!StringUtils.isBlank(validationErrors)){
+            throw new Exception(validationErrors);
+        }
 
         String email = request.getEmail();
         String newPassword = request.getNewPassword();
         String token = request.getToken();
 
         if(passwordChangeTokenManager.isTokenExpired(token)){
-            return new PasswordChangeResponse("fail", "Token expired");
+            throw new Exception("Token expired");
         }
 
         Optional<User> userOptional = userService.getUser(email);
 
         if (userOptional.isEmpty()) {
-            return new PasswordChangeResponse("fail", "User not found");
+            throw new Exception("User not found");
         }
 
         User user = userOptional.get();
@@ -61,6 +72,11 @@ public class PasswordChangeService {
     }
 
     public PasswordChangeResponse changePassword(PasswordChangeRequest request) throws Exception {
+        String validationErrors = passwordChangeRequestValidator.validatePasswordChangeRequestManual(request);
+        if(!StringUtils.isBlank(validationErrors)){
+            throw new Exception(validationErrors);
+        }
+
 
         String email = request.getEmail();
         String oldPassword = request.getOldPassword();
@@ -68,19 +84,19 @@ public class PasswordChangeService {
         String token = request.getToken();
 
         if(passwordChangeTokenManager.isTokenExpired(token)){
-            return new PasswordChangeResponse("fail", "Token expired");
+            throw new Exception("Token expired");
         }
 
         Optional<User> userOptional = userService.getUser(email);
 
         if (userOptional.isEmpty()) {
-            return new PasswordChangeResponse("fail", "User not found");
+            throw new Exception("User not found");
         }
 
         User user = userOptional.get();
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            return new PasswordChangeResponse("fail", "Old password does not match");
+            throw new Exception("Passwords do not match");
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));

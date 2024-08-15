@@ -97,6 +97,10 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) throws Exception {
+        String requestValidation = requestValidator.validateAuthenticationRequest(request);
+        if(!requestValidation.isEmpty())
+            throw new Exception(requestValidation);
+
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
            request.getEmail(),
            request.getPassword()
@@ -134,7 +138,11 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse verifyCode(VerificationRequest verificationRequest) {
+    public AuthenticationResponse verifyCode(VerificationRequest verificationRequest) throws Exception {
+        String requestValidation = requestValidator.validateVerificationRequest(verificationRequest);
+        if(!requestValidation.isEmpty())
+            throw new Exception(requestValidation);
+
         User user = userService.getUser(verificationRequest.getEmail())
                 .orElseThrow(()-> new EntityNotFoundException(String.format("No user found with %S", verificationRequest.getEmail()))
                 );

@@ -20,7 +20,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.DEFINED_PORT,
+	args = {}
+)
 class AbcBackendApplicationTests {
 	@Autowired
 	private AuthenticationController authenticationController;
@@ -44,8 +46,8 @@ class AbcBackendApplicationTests {
 	@Test
 	void runTests(){
 		// No longer work
-		//authenticationTests();
-		//authorizationTests();
+		authenticationTests();
+		authorizationTests();
 	}
 
 	void authenticationTests(){
@@ -67,7 +69,7 @@ class AbcBackendApplicationTests {
 
 	void registerShouldCreateAccount(){
 		RegisterRequest request = RegisterRequest.builder()
-				.email("auth_test_account@abc_test.test")
+				.email("abc_auth_test_account@gmail.com")
 				.password("auth_test")
 				.firstName("auth")
 				.lastName("test")
@@ -91,7 +93,7 @@ class AbcBackendApplicationTests {
 		assertThat(response.getToken()).isNotNull();
 
 		// Verify that user was added into the database
-		Optional<User> query = userRepository.findUserByEmail("auth_test_account@abc_test.test");
+		Optional<User> query = userRepository.findUserByEmail("abc_auth_test_account@gmail.com");
 		assertThat(query).isPresent();
 		User testUser = query.get();
 
@@ -106,7 +108,7 @@ class AbcBackendApplicationTests {
 
 	void registerWithUsedAddressShouldThrowError(){
 		RegisterRequest request = RegisterRequest.builder()
-				.email("auth_test_account@abc_test.test")
+				.email("abc_auth_test_account@gmail.com")
 				.password("auth_test2")
 				.firstName("auth2")
 				.lastName("test2")
@@ -122,8 +124,10 @@ class AbcBackendApplicationTests {
 		AuthenticationResponse response = result.getBody();
 		assertThat(response).isNotNull();
 
+		System.out.println(response);
+		System.out.println(response.getMessage());
 		assertThat(response.getStatus()).isEqualTo("fail");
-		assertThat(response.getMessage()).isEqualTo("Email address is already taken.");
+		assertThat(response.getMessage()).isEqualTo("Email address is already taken");
 		assertThat(response.getRole()).isEqualTo("");
 		assertThat(response.getFirstName()).isEqualTo("");
 		assertThat(response.getFirstName()).isEqualTo("");
@@ -150,7 +154,7 @@ class AbcBackendApplicationTests {
 		assertThat(response).isNotNull();
 
 		assertThat(response.getStatus()).isEqualTo("fail");
-		assertThat(response.getMessage()).isEqualTo("Invalid email");
+		assertThat(response.getMessage()).isEqualTo("Invalid email;");
 		assertThat(response.getRole()).isEqualTo("");
 		assertThat(response.getFirstName()).isEqualTo("");
 		assertThat(response.getFirstName()).isEqualTo("");
@@ -159,7 +163,7 @@ class AbcBackendApplicationTests {
 
 	void loginWithExistingAccountIsSuccessful(){
 		AuthenticationRequest request = AuthenticationRequest.builder()
-				.email("auth_test_account@abc_test.test")
+				.email("abc_auth_test_account@gmail.com")
 				.password("auth_test")
 				.build();
 
@@ -183,7 +187,7 @@ class AbcBackendApplicationTests {
 
 	void loginWithNonExistingAccountIsUnsuccessful(){
 		AuthenticationRequest request = AuthenticationRequest.builder()
-				.email("fictional_auth_test_account@abc_test.test")
+				.email("fictional_abc_auth_test_account@gmail.com")
 				.password("auth_test")
 				.build();
 
@@ -207,7 +211,7 @@ class AbcBackendApplicationTests {
 
 	void loginWithIncorrectCredentialsIsUnsuccessful(){
 		AuthenticationRequest request = AuthenticationRequest.builder()
-				.email("auth_test_account@abc_test.test")
+				.email("abc_auth_test_account@gmail.com")
 				.password("auth_test_wrong")
 				.build();
 
@@ -231,7 +235,7 @@ class AbcBackendApplicationTests {
 
 	void testNormalUserAuthorizationLevel(){
 		RegisterRequest request = RegisterRequest.builder()
-				.email("normal_auth_test_account@abc_test.test")
+				.email("normal_abc_auth_test_account@gmail.com")
 				.password("auth_test")
 				.firstName("auth")
 				.lastName("test")
@@ -245,15 +249,23 @@ class AbcBackendApplicationTests {
 		AuthenticationResponse response = result.getBody();
 		assertThat(response).isNotNull();
 
-		String token = response.getToken();
-
 		// Skip email verification for testing purposes
-		Optional<User> query = userRepository.findUserByEmail("auth_test_account@abc_test.test");
+		Optional<User> query = userRepository.findUserByEmail("normal_abc_auth_test_account@gmail.com");
 		assertThat(query).isPresent();
 		User testUser = query.get();
 
 		testUser.setEnabled(true);
 		userRepository.save(testUser);
+
+		AuthenticationRequest loginRequest = AuthenticationRequest.builder().email("normal_abc_auth_test_account@gmail.com")
+						.password("auth_test").build();
+
+		result = restTemplate.exchange(
+				siteLink + "auth/authenticate", HttpMethod.POST,
+				new HttpEntity<>(loginRequest), responseType);
+
+		response = result.getBody();
+		String token = response.getToken();
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token);
@@ -283,12 +295,12 @@ class AbcBackendApplicationTests {
 
 		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
 
-		userRepository.deleteUserByEmail("normal_auth_test_account@abc_test.test");
+		userRepository.deleteUserByEmail("normal_abc_auth_test_account@gmail.com");
 	}
 
 	void testBiologistAuthorizationLevel(){
 		RegisterRequest request = RegisterRequest.builder()
-				.email("bio_auth_test_account@abc_test.test")
+				.email("bio_abc_auth_test_account@gmail.com")
 				.password("auth_test")
 				.firstName("auth")
 				.lastName("test")
@@ -302,15 +314,23 @@ class AbcBackendApplicationTests {
 		AuthenticationResponse response = result.getBody();
 		assertThat(response).isNotNull();
 
-		String token = response.getToken();
-
-		Optional<User> query = userRepository.findUserByEmail("bio_auth_test_account@abc_test.test");
+		Optional<User> query = userRepository.findUserByEmail("bio_abc_auth_test_account@gmail.com");
 		assertThat(query).isPresent();
 		User testUser = query.get();
 		testUser.setRole(Role.BIOLOGIST);
 		testUser.setEnabled(true);
 		userRepository.save(testUser);
 
+		AuthenticationRequest loginRequest = AuthenticationRequest.builder().email("bio_abc_auth_test_account@gmail.com")
+				.password("auth_test").build();
+
+		result = restTemplate.exchange(
+				siteLink + "auth/authenticate", HttpMethod.POST,
+				new HttpEntity<>(loginRequest), responseType);
+
+		response = result.getBody();
+		String token = response.getToken();
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token);
 
@@ -339,12 +359,12 @@ class AbcBackendApplicationTests {
 
 		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
 
-		userRepository.deleteUserByEmail("bio_auth_test_account@abc_test.test");
+		userRepository.deleteUserByEmail("bio_abc_auth_test_account@gmail.com");
 	}
 
 	void testArchaeologistAuthorizationLevel(){
 		RegisterRequest request = RegisterRequest.builder()
-				.email("arheo_auth_test_account@abc_test.test")
+				.email("arheo_abc_auth_test_account@gmail.com")
 				.password("auth_test")
 				.firstName("auth")
 				.lastName("test")
@@ -358,15 +378,23 @@ class AbcBackendApplicationTests {
 		AuthenticationResponse response = result.getBody();
 		assertThat(response).isNotNull();
 
-		String token = response.getToken();
-
-		Optional<User> query = userRepository.findUserByEmail("arheo_auth_test_account@abc_test.test");
+		Optional<User> query = userRepository.findUserByEmail("arheo_abc_auth_test_account@gmail.com");
 		assertThat(query).isPresent();
 		User testUser = query.get();
 		testUser.setRole(Role.ARCHAEOLOGIST);
 		testUser.setEnabled(true);
 		userRepository.save(testUser);
 
+		AuthenticationRequest loginRequest = AuthenticationRequest.builder().email("arheo_abc_auth_test_account@gmail.com")
+				.password("auth_test").build();
+
+		result = restTemplate.exchange(
+				siteLink + "auth/authenticate", HttpMethod.POST,
+				new HttpEntity<>(loginRequest), responseType);
+
+		response = result.getBody();
+		String token = response.getToken();
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token);
 
@@ -395,12 +423,12 @@ class AbcBackendApplicationTests {
 
 		assertThat(accessResult.getStatusCode().is4xxClientError()).isTrue();
 
-		userRepository.deleteUserByEmail("arheo_auth_test_account@abc_test.test");
+		userRepository.deleteUserByEmail("arheo_abc_auth_test_account@gmail.com");
 	}
 
 	void testAdminAuthorizationLevel(){
 		RegisterRequest request = RegisterRequest.builder()
-				.email("admin_auth_test_account@abc_test.test")
+				.email("admin_abc_auth_test_account@gmail.com")
 				.password("auth_test")
 				.firstName("auth")
 				.lastName("test")
@@ -414,14 +442,22 @@ class AbcBackendApplicationTests {
 		AuthenticationResponse response = result.getBody();
 		assertThat(response).isNotNull();
 
-		String token = response.getToken();
-
-		Optional<User> query = userRepository.findUserByEmail("admin_auth_test_account@abc_test.test");
+		Optional<User> query = userRepository.findUserByEmail("admin_abc_auth_test_account@gmail.com");
 		assertThat(query).isPresent();
 		User testUser = query.get();
 		testUser.setRole(Role.ADMIN);
 		testUser.setEnabled(true);
 		userRepository.save(testUser);
+
+		AuthenticationRequest loginRequest = AuthenticationRequest.builder().email("admin_abc_auth_test_account@gmail.com")
+				.password("auth_test").build();
+
+		result = restTemplate.exchange(
+				siteLink + "auth/authenticate", HttpMethod.POST,
+				new HttpEntity<>(loginRequest), responseType);
+
+		response = result.getBody();
+		String token = response.getToken();
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(token);
@@ -452,10 +488,10 @@ class AbcBackendApplicationTests {
 		assertThat(accessResult.getStatusCode().is4xxClientError()).isFalse();
 		assertThat(accessResult.getStatusCode().is2xxSuccessful()).isTrue();
 
-		userRepository.deleteUserByEmail("admin_auth_test_account@abc_test.test");
+		userRepository.deleteUserByEmail("admin_abc_auth_test_account@gmail.com");
 	}
 
 	void cleanAuthTests(){
-		userRepository.deleteUserByEmail("auth_test_account@abc_test.test");
+		userRepository.deleteUserByEmail("abc_auth_test_account@gmail.com");
 	}
 }
